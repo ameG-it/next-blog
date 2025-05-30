@@ -41,6 +41,7 @@ export async function searchPosts(search: string) {
   return await prisma.post.findMany({
     where: {
       AND: filters,
+      published: true,
     },
     include: {
       author: {
