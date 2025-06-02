@@ -17,6 +17,18 @@ export async function getPosts(): Promise<Post[]> {
   });
 }
 
+export async function getOwnPosts(userId: string): Promise<Post[]> {
+  return await prisma.post.findMany({
+    where: {
+      authorId: userId,
+      published: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
 export async function getPostById(id: string): Promise<Post | null> {
   return await prisma.post.findUnique({
     where: {

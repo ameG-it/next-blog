@@ -22,6 +22,16 @@ import bcrypt from "bcryptjs";
  * @throws {Error} 資格情報が無効な場合にスローされます。
  */
 // NextAuthの設定をエクスポートします。
+
+const getAuthByEmail = async (email: string) => {
+  // ユーザーIDを使用してユーザー情報を取得します。
+  const user = await getUserByEmail(email);
+  if (!user) {
+    throw new Error("User not found");
+  }
+  return "user";
+};
+
 // `auth`、`signIn`、`signOut`、`handlers`を提供し、認証関連の操作を簡単に行えるようにします。
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
@@ -49,4 +59,28 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      // ユーザーが認証された場合、トークンにユーザー情報を追加します。
+      if (user && user.id && user.email && user.name) {
+        token.id = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.role = await getAuthByEmail(user.email);
+      }
+      return token;
+    },
+    // 認証後のコールバック
+    async session({ session, token }) {
+      if (session.user) {
+        // セッションにユーザー情報を追加
+        session.user.id = (token.id || token.sub || "") as string;
+        session.user.email = (token.email || "") as string;
+        session.user.name = (token.name || "") as string;
+        session.user.role = (token.role || "") as string;
+      }
+
+      return session;
+    },
+  },
 });
