@@ -21,7 +21,6 @@ export async function getOwnPosts(userId: string): Promise<Post[]> {
   return await prisma.post.findMany({
     where: {
       authorId: userId,
-      published: true,
     },
     orderBy: {
       createdAt: "desc",
