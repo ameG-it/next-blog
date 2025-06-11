@@ -58,10 +58,10 @@ export const columns: ColumnDef<Post>[] = [
             <DropdownMenuLabel>操作</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/posts/${post.id}`}>閲覧</Link>
+              <Link href={`manage/posts/${post.id}`}>閲覧</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="cursor-pointer">
-              <Link href={`/posts/edit/${post.id}`}>編集</Link>
+              <Link href={`manage/posts/edit/${post.id}`}>編集</Link>
             </DropdownMenuItem>
             {post.published ? (
               <DropdownMenuItem className="">非公開</DropdownMenuItem>

@@ -17,6 +17,23 @@ export async function getPosts(): Promise<Post[]> {
   });
 }
 
+export async function getOwnPost(
+  postId: string,
+  userId: string
+): Promise<Post | null> {
+  return await prisma.post.findFirst({
+    where: {
+      id: postId,
+      authorId: userId,
+    },
+    include: {
+      author: {
+        select: { name: true },
+      },
+    },
+  });
+}
+
 export async function getOwnPosts(userId: string): Promise<Post[]> {
   return await prisma.post.findMany({
     where: {
