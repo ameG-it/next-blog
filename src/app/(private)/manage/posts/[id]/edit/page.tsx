@@ -16,7 +16,7 @@ export default async function EditPage({ params }: PageProps) {
   if (!session?.user?.email || !session?.user?.id) {
     throw new Error("Unauthorized access");
   }
-  const post = (await getOwnPost(session.user.id, id)) as Post;
+  const post = (await getOwnPost(id, session.user.id)) as Post;
 
   if (!post) {
     notFound();

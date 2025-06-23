@@ -1,5 +1,5 @@
 "use client";
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { createPost } from "@/lib/actuons/createPost";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -8,6 +8,8 @@ import TextareaAutosize from "react-textarea-autosize";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
 
 type EditPostformProps = {
   post: {
@@ -24,7 +26,9 @@ export default function EditPostform({ post }: EditPostformProps) {
   const [contentLength, setContentLength] = useState(post.content.length);
   const [preview, setPreview] = useState(false);
   const [title, setTitle] = useState(post.title);
-  const [topImage, setTopImage] = useState(post.topImage);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    post.topImage || null
+  );
   const [published, setPublished] = useState(post.published);
 
   const [state, formAction, isPending] = useActionState(createPost, {
@@ -39,14 +43,33 @@ export default function EditPostform({ post }: EditPostformProps) {
     setContent(newContent);
     setContentLength(newContent.length);
   };
+
+  const handleTopImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] || null;
+    if (file) {
+      // Blobの一時URLを作成
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl && previewUrl !== post.topImage) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [post.topImage, previewUrl]);
+
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
   };
 
+  console.log("imageUrl:", post.topImage);
   return (
     <div>
       <div className="container mx-auto mt-10">
-        <h1 className="text-2xl font-bold mb-4">新規作成</h1>
+        <h1 className="text-2xl font-bold mb-4">編集</h1>
         <form action={formAction} className="space-y-4">
           <div>
             <Label htmlFor="title">タイトル</Label>
@@ -54,6 +77,7 @@ export default function EditPostform({ post }: EditPostformProps) {
               id="title"
               name="title"
               placeholder="タイトルを入力"
+              value={title}
               onChange={handleTitleChange}
             />
           </div>
@@ -67,8 +91,20 @@ export default function EditPostform({ post }: EditPostformProps) {
               type="file"
               accept="image/*"
               className="mt-2"
+              onChange={handleTopImageChange}
             />
           </div>
+          {previewUrl && (
+            <div className="relative h-64 w-full">
+              <Image
+                src={previewUrl}
+                alt={post.title || "Preview Image"}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                fill
+                className="rounded-t-xl object-cover w-full h-64"
+              />
+            </div>
+          )}
 
           {state.errors.title && (
             <p className="text-red-500 text-sm">
@@ -113,6 +149,25 @@ export default function EditPostform({ post }: EditPostformProps) {
               </ReactMarkdown>
             </div>
           )}
+          <div className="mt-4">
+            <Label htmlFor="content">公開設定</Label>
+          </div>
+          <RadioGroup
+            value={published.toString()}
+            name="published"
+            onValueChange={(value) => {
+              setPublished(value === "true");
+            }}
+          >
+            <div className="flex items-center mb-2">
+              <RadioGroupItem value="true" id="published" className="mr-4" />
+              <Label htmlFor="published">公開</Label>
+            </div>
+            <div className="flex items-center mb-2">
+              <RadioGroupItem value="false" id="draft" className="ml-4" />
+              <Label htmlFor="draft">非公開</Label>
+            </div>
+          </RadioGroup>
 
           <Button
             type="submit"

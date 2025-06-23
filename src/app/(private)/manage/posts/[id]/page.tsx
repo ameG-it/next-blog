@@ -34,7 +34,6 @@ export default async function ShowPage({ params }: Params) {
   console.log("post", post);
 
   const topImage = post.topImage || "placeholder.png"; // デフォルトの画像を設定
-  console.log("topImage", topImage);
   return (
     <div>
       <Card className="max-w-3xl mx-auto mt-10 pt-0">
