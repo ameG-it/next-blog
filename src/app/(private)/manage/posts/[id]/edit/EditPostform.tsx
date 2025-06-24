@@ -1,6 +1,6 @@
 "use client";
 import { useState, useActionState, useEffect } from "react";
-import { createPost } from "@/lib/actuons/createPost";
+import { updatePost } from "@/lib/actuons/updatePost";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehyoeHighlight from "rehype-highlight";
@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { RadioGroup, RadioGroupItem } from "@radix-ui/react-radio-group";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type EditPostformProps = {
   post: {
@@ -31,7 +31,7 @@ export default function EditPostform({ post }: EditPostformProps) {
   );
   const [published, setPublished] = useState(post.published);
 
-  const [state, formAction, isPending] = useActionState(createPost, {
+  const [state, formAction, isPending] = useActionState(updatePost, {
     success: false,
     errors: {},
   });
@@ -164,7 +164,7 @@ export default function EditPostform({ post }: EditPostformProps) {
               <Label htmlFor="published">公開</Label>
             </div>
             <div className="flex items-center mb-2">
-              <RadioGroupItem value="false" id="draft" className="ml-4" />
+              <RadioGroupItem value="false" id="draft" className="mr-4" />
               <Label htmlFor="draft">非公開</Label>
             </div>
           </RadioGroup>
@@ -176,7 +176,7 @@ export default function EditPostform({ post }: EditPostformProps) {
           >
             {isPending ? "更新中..." : "更新する"}
           </Button>
-          <input type="hidden" name="postId" value={post.id} />
+          <input type="hidden" name="id" value={post.id} />
           <input type="hidden" name="oldImageUrl" value={post.topImage || ""} />
         </form>
       </div>

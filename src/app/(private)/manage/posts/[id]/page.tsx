@@ -16,9 +16,9 @@ import Image from "next/image";
 import { Post } from "@/types/post";
 
 type Params = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function ShowPage({ params }: Params) {

@@ -6,13 +6,13 @@ import Image from "next/image";
 import { Post } from "@/types/post";
 
 type Params = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export default async function PostPage({ params }: Params) {
-  const { id } = params; // Promise を削除し、通常のオブジェクトとして扱う
+  const { id } = await params; // Promise を削除し、通常のオブジェクトとして扱う
   const post = (await getPostById(id)) as Post;
   if (!post) {
     notFound();
